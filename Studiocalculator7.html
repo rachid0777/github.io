@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Effect Time Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    .calculator {
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .calculator h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    input[type="number"] {
+      padding: 8px;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    ul li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator">
+  <h2>Audio Compressor Release Time Calculator</h2>
+  <label for="tempoCompressor">Song Tempo (BPM):</label>
+  <input type="number" id="tempoCompressor" placeholder="Enter the tempo">
+  <button onclick="calculateReleaseTime()">Calculate</button>
+  <div id="releaseTime"></div>
+</div>
+
+<div class="calculator">
+  <h2>Audio Compressor Attack Time Calculator</h2>
+  <label for="tempoAttack">Song Tempo (BPM):</label>
+  <input type="number" id="tempoAttack" placeholder="Enter the tempo">
+  <button onclick="calculateAttackTime()">Calculate</button>
+  <div id="attackTime"></div>
+</div>
+
+<div class="calculator">
+  <h2>Reverb Time Calculator</h2>
+  <label for="tempoReverb">Song Tempo (BPM):</label>
+  <input type="number" id="tempoReverb" placeholder="Enter the tempo">
+  <button onclick="calculateReverbTimes()">Calculate</button>
+  <div id="reverbTimes"></div>
+</div>
+
+<div class="calculator">
+  <h2>Delay Time Calculator</h2>
+  <label for="tempoDelay">Song Tempo (BPM):</label>
+  <input type="number" id="tempoDelay" placeholder="Enter the tempo">
+  <button onclick="calculateDelayTimes()">Calculate</button>
+  <div id="delayTimes"></div>
+</div>
+
+<script>
+  function calculateReleaseTime() {
+    var tempo = document.getElementById("tempoCompressor").value;
+    if (tempo) {
+      var beatDuration = 60 / tempo;
+      var quarterBeat = beatDuration / 4 * 1000;
+      var halfBeat = beatDuration / 2 * 1000;
+      var fullBeat = beatDuration * 1000;
+
+      var output = "<p>Release Time Calculations:</p><ul>";
+      output += "<li>Quarter Beat: " + quarterBeat.toFixed(2) + " milliseconds</li>";
+      output += "<li>Half Beat: " + halfBeat.toFixed(2) + " milliseconds</li>";
+      output += "<li>Full Beat: " + fullBeat.toFixed(2) + " milliseconds</li>";
+      output += "</ul>";
+
+      document.getElementById("releaseTime").innerHTML = output;
+    } else {
+      alert("Please enter a valid tempo.");
+    }
+  }
+
+  function calculateAttackTime() {
+    var tempo = document.getElementById("tempoAttack").value;
+    if (tempo) {
+      var beatDuration = 60 / tempo;
+      var sixteenthBeat = beatDuration / 16 * 1000;
+      var eighthBeat = beatDuration / 8 * 1000;
+      var thirtySecondBeat = beatDuration / 32 * 1000;
+
+      var output = "<p>Attack Time Calculations:</p><ul>";
+      output += "<li>1/16th Beat: " + sixteenthBeat.toFixed(2) + " milliseconds</li>";
+      output += "<li>1/8th Beat: " + eighthBeat.toFixed(2) + " milliseconds</li>";
+      output += "<li>1/32nd Beat: " + thirtySecondBeat.toFixed(2) + " milliseconds</li>";
+      output += "</ul>";
+
+      document.getElementById("attackTime").innerHTML = output;
+    } else {
+      alert("Please enter a valid tempo.");
+    }
+  }
+
+  function calculateReverbTimes() {
+    var tempo = document.getElementById("tempoReverb").value;
+    if (tempo) {
+      var reverb120 = {
+        "Hall (2 Bars)": { "Pre-Delay": 62.5, "Decay Time": 3937.5, "Total Reverb Time": 4000 },
+        "Large Room (1 Bar)": { "Pre-Delay": 31.25, "Decay Time": 1968.75, "Total Reverb Time": 2000 },
+        "Small Room (1/2 Note)": { "Pre-Delay": 15.63, "Decay Time": 984.38, "Total Reverb Time": 1000 },
+        "Tight Ambience (1/4 Note)": { "Pre-Delay": 3.91, "Decay Time": 496.09, "Total Reverb Time": 500 }
+      };
+
+      var factor = 120 / tempo;
+
+      var reverbTimes = {};
+
+      for (var key in reverb120) {
+        var preDelay = reverb120[key]["Pre-Delay"] * factor;
+        var decayTime = reverb120[key]["Decay Time"] * factor;
+        var totalTime = reverb120[key]["Total Reverb Time"] * factor;
+
+        reverbTimes[key] = {
+          "Pre-Delay": preDelay.toFixed(2),
+          "Decay Time": decayTime.toFixed(2),
+          "Total Reverb Time": totalTime.toFixed(2)
+        };
+      }
+
+      var output = "<p>Reverb Times:</p><ul>";
+      for (var key in reverbTimes) {
+        output += "<li>" + key + ":<ul>";
+        for (var prop in reverbTimes[key]) {
+          output += "<li>" + prop + ": " + reverbTimes[key][prop] + " ms</li>";
+        }
+        output += "</ul></li>";
+      }
+      output += "</ul>";
+
+      document.getElementById("reverbTimes").innerHTML = output;
+    } else {
+      alert("Please enter a valid tempo.");
+    }
+  }
+
+  function calculateDelayTimes() {
+    var tempo = document.getElementById("tempoDelay").value;
+    if (tempo) {
+      var delay120 = {
+        "1/1 (1 Bar)": 2000,
+        "1/2 (2 Beats)": 1000,
+        "1/4 (1 Beat)": 500,
+        "1/8": 250,
+        "1/16": 125,
+        "1/32": 62.5,
+        "1/64": 31.25,
+        "1/128": 15.63,
+        "1/256": 7.81,
+        "1/512": 3.91
+      };
+
+      var factor = 120 / tempo;
+
+      var delayTimes = {};
+
+      for (var key in delay120) {
+        var time = delay120[key] * factor;
+        var dottedTime = time * 1.5;
+        var tripletsTime = time * 2 / 3;
+        delayTimes[key] = {
+          "Normal": time.toFixed(2) + " milliseconds",
+          "Dotted": dottedTime.toFixed(2) + " milliseconds",
+          "Triplets": tripletsTime.toFixed(2) + " milliseconds"
+        };
+      }
+
+      var output = "<p>Delay Times:</p><ul>";
+      for (var key in delayTimes) {
+        output += "<li>" + key + ": <ul>";
+        for (var type in delayTimes[key]) {
+          output += "<li>" + type + ": " + delayTimes[key][type] + "</li>";
+        }
+        output += "</ul></li>";
+      }
+      output += "</ul>";
+
+      document.getElementById("delayTimes").innerHTML = output;
+    } else {
+      alert("Please enter a valid tempo.");
+    }
+  }
+</script>
+
+</body>
+</html>
